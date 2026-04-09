@@ -1,0 +1,33 @@
+services:
+  server:
+    image: node:20-alpine
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_PATH: /data/db.sqlite
+    volumes:
+      - ./server:/app
+      - server_modules:/app/node_modules
+      - db_data:/data
+    command: sh -c "npm install && npm run dev"
+
+  client:
+    image: node:20-alpine
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://server:3000
+    volumes:
+      - ./client:/app
+      - client_modules:/app/node_modules
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - server
+
+volumes:
+  server_modules:
+  client_modules:
+  db_data:
