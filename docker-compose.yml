@@ -6,12 +6,17 @@ services:
       - "3000:3000"
     environment:
       PORT: 3000
-      DB_PATH: /data/db.sqlite
+      DB_PATH: /app/data/db.sqlite
+      NODE_ENV: development
+      JWT_SECRET: dev-secret-change-me
+      ADMIN_USER: admin
+      ADMIN_PASSWORD: admin
+      CORS_ORIGIN: ""
     volumes:
       - ./server:/app
       - server_modules:/app/node_modules
-      - db_data:/data
-    command: sh -c "npm install && npm run dev"
+      - db-data:/app/data
+    command: sh -c "npm install && node --watch index.js"
 
   client:
     image: node:20-alpine
@@ -23,11 +28,11 @@ services:
     volumes:
       - ./client:/app
       - client_modules:/app/node_modules
-    command: sh -c "npm install && npm run dev -- --host"
+    command: sh -c "npm install && npx vite --host"
     depends_on:
       - server
 
 volumes:
   server_modules:
   client_modules:
-  db_data:
+  db-data:
